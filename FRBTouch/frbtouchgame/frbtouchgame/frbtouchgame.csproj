@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalContent.Generated.cs" />
+    <Compile Include="Performance\IEntityFactory.Generated.cs" />
     <Compile Include="Performance\IPoolable.Generated.cs" />
     <Compile Include="Performance\PoolList.Generated.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Screens\TouchScreen.Generated.cs">
       <DependentUpon>TouchScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Setup\CameraSetup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
@@ -163,7 +165,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Users\Domenic\Dropbox\frbtouch\FRBTouch\FRBTouch\FRBTouch.csproj">
+    <ProjectReference Include="..\..\FRBTouch\FRBTouch.csproj">
       <Project>{ca877dd7-4e2d-4751-8607-c8b852112307}</Project>
       <Name>FRBTouch</Name>
     </ProjectReference>

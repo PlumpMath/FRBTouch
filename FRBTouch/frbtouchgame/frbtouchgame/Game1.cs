@@ -44,6 +44,7 @@ namespace frbtouchgame
         {
             Renderer.UseRenderTargets = false;
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
+			CameraSetup.SetupCamera(SpriteManager.Camera, graphics);
 			GlobalContent.Initialize();
 
 			FlatRedBall.Screens.ScreenManager.Start(typeof(frbtouchgame.Screens.TouchScreen));

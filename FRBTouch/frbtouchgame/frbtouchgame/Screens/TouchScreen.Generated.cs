@@ -1,13 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using FlatRedBall.Math.Geometry;
-using FlatRedBall.AI.Pathfinding;
-using FlatRedBall.Input;
-using FlatRedBall.IO;
-using FlatRedBall.Instructions;
-using FlatRedBall.Math.Splines;
-using FlatRedBall.Utilities;
 using BitmapFont = FlatRedBall.Graphics.BitmapFont;
 
 using Cursor = FlatRedBall.Gui.Cursor;
@@ -31,6 +21,9 @@ using Microsoft.Xna.Framework.Media;
 // Generated Usings
 using FlatRedBall;
 using FlatRedBall.Screens;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace frbtouchgame.Screens
 {
@@ -113,6 +106,7 @@ namespace frbtouchgame.Screens
 		}
 		public virtual void AddToManagersBottomUp ()
 		{
+			CameraSetup.ResetCamera(SpriteManager.Camera);
 		}
 		public virtual void ConvertToManuallyUpdated ()
 		{
