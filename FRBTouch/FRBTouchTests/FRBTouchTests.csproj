@@ -79,10 +79,6 @@
       <Project>{ca877dd7-4e2d-4751-8607-c8b852112307}</Project>
       <Name>FRBTouch</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Windows7.Multitouch\Windows7.Multitouch.csproj">
-      <Project>{ba3201ed-9fdd-44e5-aa16-5a14526bb908}</Project>
-      <Name>Windows7.Multitouch</Name>
-    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -72,7 +72,6 @@ namespace FRBTouch.MultiTouch
 
                     foreach (TouchEventArgs arg in DecodeMessage(hWnd, msg, wparam, lparam, DpiX, DpiY))
                     {
-
                         if (TouchDown != null && arg.IsTouchDown)
                         {
                             TouchDown(this, arg);
@@ -199,9 +198,10 @@ namespace FRBTouch.MultiTouch
                 ContactSize = new Size(AdjustDpiX(touchInput.cyContact / 100), AdjustDpiY(touchInput.cyContact / 100));
                           
             Id = touchInput.dwID;
-
+            
             Point p = _hWndWrapper.PointToClient(new Point(touchInput.x / 100, touchInput.y / 100));
-            Location = new Point(AdjustDpiX(p.X), AdjustDpiY(p.Y));
+            Location = p;
+            //Location = new Point(AdjustDpiX(p.X), AdjustDpiY(p.Y));
 
             Time = touchInput.dwTime;
             TimeSpan ellapse = TimeSpan.FromMilliseconds(Environment.TickCount - touchInput.dwTime);

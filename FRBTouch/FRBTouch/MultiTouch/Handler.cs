@@ -132,8 +132,12 @@ namespace FRBTouch.MultiTouch
             //take the desktop DPI
             using (Graphics graphics = Graphics.FromHwnd(_hWndWrapper.Handle))
             {
-                DpiX = graphics.DpiX;
-                DpiY = graphics.DpiY;
+                IntPtr desktop = graphics.GetHdc();
+                
+                int Xdpi = User32.GetDeviceCaps(desktop, (int)User32.DeviceCap.LOGPIXELSX);
+                int Ydpi = User32.GetDeviceCaps(desktop, (int)User32.DeviceCap.LOGPIXELSY);
+                DpiX = Xdpi;
+                DpiY = Ydpi;
             }
 
             WindowMessage += (s, e) => { };
