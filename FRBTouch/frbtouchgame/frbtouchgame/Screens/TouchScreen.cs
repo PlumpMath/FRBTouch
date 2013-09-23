@@ -17,11 +17,12 @@ namespace frbtouchgame.Screens
 
         void CustomInitialize()
         {
-            _gestureProvider = new GestureProvider(new QueueingTouchEventProvider(FlatRedBallServices.Game.Window.Handle));
             SpriteManager.Camera.Position.Z += 1900;
             SpriteManager.Camera.Position.Y -= 300;
 
             SpriteManager.Camera.FarClipPlane = 30000f;
+
+            _gestureProvider = new GestureProvider(new QueueingTouchEventProvider(FlatRedBallServices.Game.Window.Handle, new FRBCameraCoordinateTranslator(Camera.Main)));
         }
 
         void CustomActivity(bool firstTimeCalled)
@@ -79,7 +80,7 @@ namespace frbtouchgame.Screens
 
         private static Vector3 GetWorldCoordinate(Vector2 touchPosition)
         {
-            
+            return new Vector3(touchPosition, 0);            
             //var touch3d = new Vector3(touchPosition, Camera.Main.Z);
             //var direction = Camera.Main.Position - touch3d;
             //direction.Normalize();

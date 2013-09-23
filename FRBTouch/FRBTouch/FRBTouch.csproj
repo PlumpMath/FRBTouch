@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FlatRedBall">
+      <HintPath>..\frbtouchgame\frbtouchgame\Libraries\Xna4Pc\FlatRedBall.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,9 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FRBCameraCoordinateTranslator.cs" />
     <Compile Include="GestureProvider.cs" />
     <Compile Include="GestureSample.cs" />
     <Compile Include="GestureType.cs" />
+    <Compile Include="ICoordinateTranslator.cs" />
     <Compile Include="ITouchEventProvider.cs" />
     <Compile Include="ITouchEventReceiver.cs" />
     <Compile Include="MultiTouch\Handler.cs" />

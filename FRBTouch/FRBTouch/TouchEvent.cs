@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace FRBTouch
 {
-    public struct TouchEvent
+    public class TouchEvent
     {
         private sealed class IdEqualityComparer : IEqualityComparer<TouchEvent>
         {
@@ -52,7 +52,7 @@ namespace FRBTouch
         public int Id { get; set; }
         public TouchEventAction Action { get; set; }
 
-        public Vector2 Position { get; set; }
+        public Vector2 Position;
         public DateTime TimeStamp { get; set; }
     }
 }

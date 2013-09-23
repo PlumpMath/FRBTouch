@@ -8,15 +8,15 @@ namespace FRBTouch
 {
     public class QueueingTouchEventProvider : ITouchEventProvider, ITouchEventReceiver
     {
-        private readonly TouchHandler _handler;
+        private readonly ICoordinateTranslator _mockTranslator;
 
-        public QueueingTouchEventProvider(IntPtr handle)
+        public QueueingTouchEventProvider(IntPtr handle, ICoordinateTranslator mockTranslator, TouchHandler handler = null)
         {
-            _handler = Handler.CreateHandler<TouchHandler>(new Win32HwndWrapper(handle));
-
-            _handler.TouchDown += OnHandlerOnTouchDown;
-            _handler.TouchMove += OnHandlerOnTouchMove;
-            _handler.TouchUp += OnHandlerOnTouchUp;
+            _mockTranslator = mockTranslator;
+            var handler1 = handler ?? Handler.CreateHandler<TouchHandler>(new Win32HwndWrapper(handle));
+            handler1.TouchDown += OnHandlerOnTouchDown;
+            handler1.TouchMove += OnHandlerOnTouchMove;
+            handler1.TouchUp += OnHandlerOnTouchUp;
         }
 
         private void OnHandlerOnTouchUp(object sender, TouchEventArgs touchEventArgs)
@@ -55,6 +55,10 @@ namespace FRBTouch
                 {
                     var oldEvents = _queuedEvents;
                     _queuedEvents = new List<TouchEvent>();
+                    foreach (TouchEvent t in oldEvents)
+                    {
+                        t.Position = _mockTranslator.TranslateCoordinates(t.Position);
+                    }
                     return oldEvents;
                 }
                 return null;

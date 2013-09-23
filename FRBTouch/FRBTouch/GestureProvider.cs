@@ -75,8 +75,9 @@ namespace FRBTouch
                         if (_touchPoints.Count > 1)
                         {
                             // This was a pinch. Figure out if both points moved so we combine gestures
-                            TouchEvent? pinchMove = null;
+                            
                             var pinchStart = new TouchEvent();
+                            TouchEvent pinchMove = null;
                             foreach (var touchPoint in _touchPoints)
                             {
                                 if (touchPoint.Key != touchEvent.Id)
@@ -98,23 +99,23 @@ namespace FRBTouch
                                     break;
                                 }
                             }
-                            if (!pinchMove.HasValue)
+                            if (pinchMove == null)
                             {
                                 pinchMove = pinchStart;
                             }
 
                             _pinchPoints[touchEvent.Id]
-                                = _pinchPoints[pinchMove.Value.Id]
+                                = _pinchPoints[pinchMove.Id]
                                     = new PinchEventGroup
                                     {
                                         One = touchEvent,
-                                        Two = pinchMove.Value
+                                        Two = pinchMove
                                     };
 
                             gestures.Add(new GestureSample(GestureType.Pinch, touchEvent.TimeStamp - _startTime,
-                                touchEvent.Position, pinchMove.Value.Position,
+                                touchEvent.Position, pinchMove.Position,
                                 touchEvent.Position - originalEvent.Position,
-                                pinchMove.Value.Position - pinchStart.Position));
+                                pinchMove.Position - pinchStart.Position));
                         }
                             #endregion
 
