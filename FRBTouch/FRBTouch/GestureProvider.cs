@@ -112,14 +112,25 @@ namespace FRBTouch
                                         Two = pinchMove
                                     };
 
-                            gestures.Add(new GestureSample(GestureType.Pinch, touchEvent.TimeStamp - _startTime,
+                            gestures.Add(new GestureSample(GestureType.Pinch, 
+                                touchEvent.TimeStamp - _startTime,
                                 touchEvent.Position, pinchMove.Position,
                                 touchEvent.Position - originalEvent.Position,
                                 pinchMove.Position - pinchStart.Position));
+
+                            var originalCenter = (pinchStart.Position - originalEvent.Position)/2.0f;
+                            var newCenter = (pinchMove.Position - touchEvent.Position)/2.0f;
+
+                            gestures.Add(new GestureSample(GestureType.FreeDrag,
+                                touchEvent.TimeStamp - _startTime,
+                                newCenter,
+                                Vector2.Zero,
+                                newCenter - originalCenter,
+                                Vector2.Zero));
                         }
                             #endregion
 
-                            #region drag
+                        #region drag
 
                         else
                         {

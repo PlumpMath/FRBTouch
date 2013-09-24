@@ -257,13 +257,72 @@ namespace FRBTouchTests
 
             // Assert
             var gestureSamples = samples.ToList();
-            Assert.AreEqual(1, gestureSamples.Count);
 
             var pinch = gestureSamples[0];
             Assert.AreEqual(GestureType.Pinch, pinch.GestureType);
             Assert.IsTrue(Math.Abs(pinch.Delta.Y) < .0001f);
             Assert.IsTrue(Math.Abs(pinch.Delta.X - 2) < .0001f);
             Assert.IsTrue(Math.Abs(pinch.Delta2.X - -3) < .0001f);
+        }
+
+        [TestMethod]
+        public void pinch_returns_freedrag_gesture_for_center_point()
+        {
+            // Arrange
+            _container
+                .Arrange<ITouchEventProvider>(p => p.Events)
+                .Returns(new List<TouchEvent>
+                {
+                    new TouchEvent
+                    {
+                        Id = 1,
+                        Position = Vector2.Zero,
+                        Action = TouchEvent.TouchEventAction.Down,
+                        TimeStamp = DateTime.Now
+                    },
+                    new TouchEvent
+                    {
+                        Id = 2,
+                        Position = new Vector2(10f, 0),
+                        Action = TouchEvent.TouchEventAction.Down,
+                        TimeStamp = DateTime.Now.AddMilliseconds(100.0)
+                    },
+                    new TouchEvent
+                    {
+                        Id = 1,
+                        Position = new Vector2(2, 0f),
+                        Action = TouchEvent.TouchEventAction.Move,
+                        TimeStamp = DateTime.Now.AddMilliseconds(200.0)
+                    },
+                    new TouchEvent
+                    {
+                        Id = 2,
+                        Position = new Vector2(7f, 0f),
+                        Action = TouchEvent.TouchEventAction.Move,
+                        TimeStamp = DateTime.Now.AddMilliseconds(210.0)
+                    }
+                });
+
+
+            var gestureProvider = _container.Instance;
+
+            // Act
+            IEnumerable<GestureSample> samples = gestureProvider.GetSamples();
+
+            // Assert
+            var gestureSamples = samples.ToList();
+            Assert.AreEqual(2, gestureSamples.Count);
+
+            var pinch = gestureSamples[0];
+            Assert.AreEqual(GestureType.Pinch, pinch.GestureType);
+            Assert.IsTrue(Math.Abs(pinch.Delta.Y) < .0001f);
+            Assert.IsTrue(Math.Abs(pinch.Delta.X - 2) < .0001f);
+            Assert.IsTrue(Math.Abs(pinch.Delta2.X - -3) < .0001f);
+
+            var drag = gestureSamples[1];
+            Assert.AreEqual(GestureType.FreeDrag, drag.GestureType);
+            Assert.IsTrue(Math.Abs(drag.Position.X - 2.5f) < .0001f);
+            Assert.IsTrue(Math.Abs(drag.Delta.X - -2.5) < .0001f);
         }
 
         [TestMethod]
@@ -326,9 +385,9 @@ namespace FRBTouchTests
 
             // Assert
             var gestureSamples = samples.ToList();
-            Assert.AreEqual(2, gestureSamples.Count);
+            Assert.AreEqual(3, gestureSamples.Count);
 
-            var gesture = gestureSamples[1];
+            var gesture = gestureSamples[2];
             Assert.AreEqual(GestureType.PinchComplete, gesture.GestureType);
         }
 
