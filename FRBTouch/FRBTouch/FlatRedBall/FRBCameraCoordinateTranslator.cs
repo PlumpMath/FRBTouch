@@ -2,7 +2,7 @@ using FlatRedBall;
 using FlatRedBall.Math;
 using Microsoft.Xna.Framework;
 
-namespace FRBTouch
+namespace FRBTouch.FlatRedBall
 {
     public class FRBCameraCoordinateTranslator : ICoordinateTranslator
     {

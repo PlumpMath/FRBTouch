@@ -52,7 +52,8 @@ namespace FRBTouch
         public int Id { get; set; }
         public TouchEventAction Action { get; set; }
 
-        public Vector2 Position;
+        public Vector2 TranslatedPosition;
         public DateTime TimeStamp { get; set; }
+        public Vector2 NonTranslatedPosition { get; set; }
     }
 }

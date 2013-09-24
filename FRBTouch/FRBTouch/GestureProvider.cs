@@ -66,7 +66,7 @@ namespace FRBTouch
                 {
                     var originalEvent = _touchPoints[touchEvent.Id];
 
-                    if (originalEvent.Position != touchEvent.Position)
+                    if (originalEvent.TranslatedPosition != touchEvent.TranslatedPosition)
                     {
                         _movingPoints[touchEvent.Id] = touchEvent;
 
@@ -114,18 +114,27 @@ namespace FRBTouch
 
                             gestures.Add(new GestureSample(GestureType.Pinch, 
                                 touchEvent.TimeStamp - _startTime,
-                                touchEvent.Position, pinchMove.Position,
-                                touchEvent.Position - originalEvent.Position,
-                                pinchMove.Position - pinchStart.Position));
+                                touchEvent.TranslatedPosition, pinchMove.TranslatedPosition,
+                                touchEvent.TranslatedPosition - originalEvent.TranslatedPosition,
+                                pinchMove.TranslatedPosition - pinchStart.TranslatedPosition,
+                                touchEvent.NonTranslatedPosition, pinchMove.NonTranslatedPosition,
+                                touchEvent.NonTranslatedPosition - originalEvent.NonTranslatedPosition,
+                                pinchMove.NonTranslatedPosition - pinchStart.NonTranslatedPosition));
 
-                            var originalCenter = (pinchStart.Position - originalEvent.Position)/2.0f;
-                            var newCenter = (pinchMove.Position - touchEvent.Position)/2.0f;
+                            var originalCenter = (pinchStart.TranslatedPosition - originalEvent.TranslatedPosition)/2.0f;
+                            var newCenter = (pinchMove.TranslatedPosition - touchEvent.TranslatedPosition)/2.0f;
+                            var originalCenterNontranslated = (pinchStart.TranslatedPosition - originalEvent.TranslatedPosition) / 2.0f;
+                            var newCenterNontranslated = (pinchMove.TranslatedPosition - touchEvent.TranslatedPosition) / 2.0f;
 
                             gestures.Add(new GestureSample(GestureType.FreeDrag,
                                 touchEvent.TimeStamp - _startTime,
                                 newCenter,
                                 Vector2.Zero,
                                 newCenter - originalCenter,
+                                Vector2.Zero,
+                                newCenterNontranslated,
+                                Vector2.Zero,
+                                newCenterNontranslated - originalCenterNontranslated,
                                 Vector2.Zero));
                         }
                             #endregion
@@ -134,8 +143,15 @@ namespace FRBTouch
 
                         else
                         {
-                            gestures.Add(new GestureSample(GestureType.FreeDrag, touchEvent.TimeStamp - _startTime,
-                                touchEvent.Position, Vector2.Zero, touchEvent.Position - originalEvent.Position,
+                            gestures.Add(new GestureSample(GestureType.FreeDrag,
+                                touchEvent.TimeStamp - _startTime,
+                                touchEvent.TranslatedPosition,
+                                Vector2.Zero, 
+                                touchEvent.TranslatedPosition - originalEvent.TranslatedPosition,
+                                Vector2.Zero,
+                                touchEvent.NonTranslatedPosition,
+                                Vector2.Zero,
+                                touchEvent.NonTranslatedPosition - originalEvent.NonTranslatedPosition,
                                 Vector2.Zero));
                         }
 
@@ -147,7 +163,16 @@ namespace FRBTouch
                     _touchPoints.Remove(touchEvent.Id);
                     if (!_movingPoints.ContainsKey(touchEvent.Id))
                     {
-                        gestures.Add(new GestureSample(GestureType.Tap, touchEvent.TimeStamp - _startTime, touchEvent.Position, Vector2.Zero, Vector2.Zero, Vector2.Zero));
+                        gestures.Add(new GestureSample(GestureType.Tap, 
+                            touchEvent.TimeStamp - _startTime,
+                            touchEvent.TranslatedPosition,
+                            Vector2.Zero,
+                            Vector2.Zero,
+                            Vector2.Zero,
+                            touchEvent.NonTranslatedPosition,
+                            Vector2.Zero,
+                            Vector2.Zero,
+                            Vector2.Zero));
                     }
                     else
                     {
@@ -167,13 +192,28 @@ namespace FRBTouch
 
                                 gestures.Add(new GestureSample(GestureType.PinchComplete,
                                     touchEvent.TimeStamp - _startTime,
-                                    pinchPoint.One.Position, pinchPoint.Two.Position, Vector2.Zero, Vector2.Zero));
+                                    pinchPoint.One.TranslatedPosition,
+                                    pinchPoint.Two.TranslatedPosition,
+                                    Vector2.Zero, 
+                                    Vector2.Zero,
+                                    pinchPoint.One.NonTranslatedPosition,
+                                    pinchPoint.Two.NonTranslatedPosition,
+                                    Vector2.Zero,
+                                    Vector2.Zero));
                             }
                         }
                         else
                         {
-                            gestures.Add(new GestureSample(GestureType.DragComplete, touchEvent.TimeStamp - _startTime,
-                                touchEvent.Position, Vector2.Zero, Vector2.Zero, Vector2.Zero));
+                            gestures.Add(new GestureSample(GestureType.DragComplete,
+                                touchEvent.TimeStamp - _startTime,
+                                touchEvent.TranslatedPosition,
+                                Vector2.Zero,
+                                Vector2.Zero,
+                                Vector2.Zero,
+                                touchEvent.NonTranslatedPosition,
+                                Vector2.Zero,
+                                Vector2.Zero,
+                                Vector2.Zero));
                         }
                     }
                 }
@@ -189,7 +229,7 @@ namespace FRBTouch
             {
                 Action = touchEvent.Action,
                 Id = touchEvent.Id,
-                Position = touchEvent.Position,
+                TranslatedPosition = touchEvent.TranslatedPosition,
                 TimeStamp = touchEvent.TimeStamp
             };
         }

@@ -2,10 +2,10 @@ using FlatRedBall;
 #if FRB_XNA || SILVERLIGHT
 
 #endif
-using FlatRedBall.Gui;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FRBTouch;
+using FRBTouch.FlatRedBall;
 using FRBTouch.MultiTouch;
 using Microsoft.Xna.Framework;
 
@@ -22,7 +22,7 @@ namespace frbtouchgame.Screens
 
             SpriteManager.Camera.FarClipPlane = 30000f;
 
-            _gestureProvider = new GestureProvider(new QueueingTouchEventProvider(FlatRedBallServices.Game.Window.Handle, new FRBCameraCoordinateTranslator(Camera.Main)));
+            _gestureProvider = new FRBGestureProvider();
         }
 
         void CustomActivity(bool firstTimeCalled)
@@ -38,21 +38,21 @@ namespace frbtouchgame.Screens
                         case GestureType.Tap:
                             var rectangle = new AxisAlignedRectangle
                             {
-                                Position = GetWorldCoordinate(gestureSample.Position),
+                                Position = GetWorldCoordinate(gestureSample.WorldPosition),
                                 Visible = true,
                                 Width = 100,
                                 Height = 100
                             };
-                            FlatRedBall.Debugging.Debugger.CommandLineWrite("Tap" + gestureSample.Position);
+                            FlatRedBall.Debugging.Debugger.CommandLineWrite("Tap" + gestureSample.WorldPosition);
                             break;
                         case GestureType.FreeDrag:
-                            FlatRedBall.Debugging.Debugger.CommandLineWrite("Drag" + gestureSample.Position);
+                            FlatRedBall.Debugging.Debugger.CommandLineWrite("Drag" + gestureSample.WorldPosition);
                             break;
                         case GestureType.Pinch:
                             FlatRedBall.Debugging.Debugger.CommandLineWrite("Pinch");
                             var rectangle3 = new AxisAlignedRectangle
                             {
-                                Position = GetWorldCoordinate(gestureSample.Position),
+                                Position = GetWorldCoordinate(gestureSample.WorldPosition),
                                 Visible = true,
                                 Width = 100,
                                 Height = 100
@@ -60,7 +60,7 @@ namespace frbtouchgame.Screens
 
                             rectangle3 = new AxisAlignedRectangle
                             {
-                                Position = GetWorldCoordinate(gestureSample.Position2),
+                                Position = GetWorldCoordinate(gestureSample.WorldPosition2),
                                 Visible = true,
                                 Width = 100,
                                 Height = 100

@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using FRBTouch.MultiTouch;
-using FRBTouch.MultiTouch.Win32Helper;
 using Microsoft.Xna.Framework;
 
 namespace FRBTouch
 {
     public class QueueingTouchEventProvider : ITouchEventProvider, ITouchEventReceiver
     {
-        private readonly ICoordinateTranslator _mockTranslator;
+        private readonly ICoordinateTranslator _translator;
 
-        public QueueingTouchEventProvider(IntPtr handle, ICoordinateTranslator mockTranslator, TouchHandler handler = null)
+        public QueueingTouchEventProvider(ICoordinateTranslator translator, TouchHandler handler)
         {
-            _mockTranslator = mockTranslator;
-            var handler1 = handler ?? Handler.CreateHandler<TouchHandler>(new Win32HwndWrapper(handle));
-            handler1.TouchDown += OnHandlerOnTouchDown;
-            handler1.TouchMove += OnHandlerOnTouchMove;
-            handler1.TouchUp += OnHandlerOnTouchUp;
+            if (handler == null)
+            {
+                throw new ArgumentNullException("handler");
+            }
+            _translator = translator;
+            handler.TouchDown += OnHandlerOnTouchDown;
+            handler.TouchMove += OnHandlerOnTouchMove;
+            handler.TouchUp += OnHandlerOnTouchUp;
         }
 
         private void OnHandlerOnTouchUp(object sender, TouchEventArgs touchEventArgs)
@@ -40,7 +42,8 @@ namespace FRBTouch
             {
                 Action = action,
                 Id = args.Id,
-                Position = new Vector2(args.Location.X, args.Location.Y),
+                TranslatedPosition = new Vector2(args.Location.X, args.Location.Y),
+                NonTranslatedPosition = new Vector2(args.Location.X, args.Location.Y),
                 TimeStamp = DateTime.Now
             };
         }
@@ -55,9 +58,9 @@ namespace FRBTouch
                 {
                     var oldEvents = _queuedEvents;
                     _queuedEvents = new List<TouchEvent>();
-                    foreach (TouchEvent t in oldEvents)
+                    foreach (var t in oldEvents)
                     {
-                        t.Position = _mockTranslator.TranslateCoordinates(t.Position);
+                        t.TranslatedPosition = _translator.TranslateCoordinates(t.TranslatedPosition);
                     }
                     return oldEvents;
                 }

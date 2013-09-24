@@ -8,40 +8,48 @@ namespace FRBTouch
     {
         private readonly GestureType _gestureType;
         private readonly TimeSpan _timestamp;
-        private readonly Vector2 _position;
-        private readonly Vector2 _position2;
-        private readonly Vector2 _delta;
-        private readonly Vector2 _delta2;
+        private readonly Vector2 _worldPosition;
+        private readonly Vector2 _worldPosition2;
+        private readonly Vector2 _worldDelta;
+        private readonly Vector2 _worldDelta2;
+        private readonly Vector2 _screenPosition;
+        private readonly Vector2 _screenPosition2;
+        private readonly Vector2 _screenDelta;
+        private readonly Vector2 _screenDelta2;
 
-        public GestureSample(GestureType gestureType, TimeSpan timestamp, Vector2 position, Vector2 position2,
-            Vector2 delta, Vector2 delta2)
+        public GestureSample(GestureType gestureType, TimeSpan timestamp, Vector2 worldPosition, Vector2 worldPosition2,
+            Vector2 worldDelta, Vector2 worldDelta2, Vector2 screenPosition, Vector2 screenPosition2, Vector2 screenDelta, Vector2 screenDelta2)
         {
             _gestureType = gestureType;
             _timestamp = timestamp;
-            _position = position;
-            _position2 = position2;
-            _delta = delta;
-            _delta2 = delta2;
+            _worldPosition = worldPosition;
+            _worldPosition2 = worldPosition2;
+            _worldDelta = worldDelta;
+            _worldDelta2 = worldDelta2;
+            _screenPosition = screenPosition;
+            _screenPosition2 = screenPosition2;
+            _screenDelta = screenDelta;
+            _screenDelta2 = screenDelta2;
         }
 
         // Summary:
         //     Holds delta information about the first touchpoint in a multitouch gesture.
-        public Vector2 Delta
+        public Vector2 WorldDelta
         {
             get
             {
-                return _delta;
+                return _worldDelta;
             }
         }
 
         //
         // Summary:
         //     Holds delta information about the second touchpoint in a multitouch gesture.
-        public Vector2 Delta2
+        public Vector2 WorldDelta2
         {
             get
             {
-                return _delta2;
+                return _worldDelta2;
             }
         }
 
@@ -59,22 +67,22 @@ namespace FRBTouch
         //
         // Summary:
         //     Holds the current position of the first touchpoint in this gesture sample.
-        public Vector2 Position
+        public Vector2 WorldPosition
         {
             get
             {
-                return _position;
+                return _worldPosition;
             }
         }
 
         //
         // Summary:
         //     Holds the current position of the the second touchpoint in this gesture sample.
-        public Vector2 Position2
+        public Vector2 WorldPosition2
         {
             get
             {
-                return _position2;
+                return _worldPosition2;
             }
         }
 
@@ -87,6 +95,26 @@ namespace FRBTouch
             {
                 return _timestamp;
             }
+        }
+
+        public Vector2 ScreenPosition
+        {
+            get { return _screenPosition; }
+        }
+
+        public Vector2 ScreenPosition2
+        {
+            get { return _screenPosition2; }
+        }
+
+        public Vector2 ScreenDelta
+        {
+            get { return _screenDelta; }
+        }
+
+        public Vector2 ScreenDelta2
+        {
+            get { return _screenDelta2; }
         }
     }
 }
