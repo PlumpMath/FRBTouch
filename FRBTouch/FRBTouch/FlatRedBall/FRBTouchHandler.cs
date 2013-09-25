@@ -8,7 +8,7 @@ namespace FRBTouch.FlatRedBall
     {
         public static TouchHandler CreateFRBWindowHandler()
         {
-            return Handler.CreateHandler<TouchHandler>(new Win32HwndWrapper(FlatRedBallServices.Game.Window.Handle));
+            return TouchHandler.CreateTouchHandler(new Win32HwndWrapper(FlatRedBallServices.Game.Window.Handle));
         }
     }
 }

@@ -18,15 +18,15 @@ namespace FRBTouch.MultiTouch
         /// </summary>
         object Source { get; }
 
-        /// <summary>
-        /// The Win32 Handle has been created
-        /// </summary>
-        event EventHandler HandleCreated;
+        ///// <summary>
+        ///// The Win32 Handle has been created
+        ///// </summary>
+        //event EventHandler HandleCreated;
 
-        /// <summary>
-        /// /// The Win32 Handle has been destroyed
-        /// </summary>
-        event EventHandler HandleDestroyed;
+        ///// <summary>
+        ///// /// The Win32 Handle has been destroyed
+        ///// </summary>
+        //event EventHandler HandleDestroyed;
 
         /// <summary>
         /// Check if the Win32 Handle is already created

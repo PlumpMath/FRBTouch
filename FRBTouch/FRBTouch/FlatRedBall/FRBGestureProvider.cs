@@ -9,7 +9,7 @@ namespace FRBTouch.FlatRedBall
 {
     public class FRBGestureProvider : GestureProvider
     {
-        public FRBGestureProvider(ITouchEventProvider touchEventProvider = null) : base(touchEventProvider ?? new QueueingTouchEventProvider(new FRBCameraCoordinateTranslator(Camera.Main), FRBTouchHandler.CreateFRBWindowHandler()))
+        public FRBGestureProvider(ITouchEventProvider touchEventProvider = null) : base(touchEventProvider ?? new QueueingTouchEventProvider(new FRBCameraCoordinateTranslator(SpriteManager.Camera), FRBTouchHandler.CreateFRBWindowHandler()))
         {
         }
     }

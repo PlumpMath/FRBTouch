@@ -15,8 +15,8 @@ namespace FRBTouch.MultiTouch.Win32Helper
         {
             _hWnd = hWnd;
 
-            HandleCreated += (s, e) => { };
-            HandleDestroyed += (s, e) => { };
+            //HandleCreated += (s, e) => { };
+            //HandleDestroyed += (s, e) => { };
         }
 
         #region IHwndWrapper Members
@@ -31,9 +31,9 @@ namespace FRBTouch.MultiTouch.Win32Helper
             get { return _hWnd; }
         }
 
-        public event EventHandler HandleCreated;
+        //public event EventHandler HandleCreated;
 
-        public event EventHandler HandleDestroyed;
+        //public event EventHandler HandleDestroyed;
 
         public bool IsHandleCreated
         {
@@ -49,10 +49,6 @@ namespace FRBTouch.MultiTouch.Win32Helper
 
         #endregion
 
-        internal void NotifyHandleDestroyed()
-        {
-            HandleDestroyed(this, EventArgs.Empty);
-        }
     }
 
     /// <summary>
@@ -67,19 +63,10 @@ namespace FRBTouch.MultiTouch.Win32Helper
         /// <typeparam name="T">The handler type</typeparam>
         /// <param name="hWnd">The Windows handle that need touch or gesture events</param>
         /// <returns>TouchHandler or Gesture Handler</returns>
-        public static T CreateHandler<T>(IntPtr hWnd) where T : Handler
+        public static TouchHandler CreateTouchHandler(IntPtr hWnd)
         {
             Win32HwndWrapper win32HwndWrapper = new Win32HwndWrapper(hWnd);
-            T handler = Handler.CreateHandler<T>(win32HwndWrapper);
-
-            //Register fot Windows Messages in order to raise the destroy handle event
-            handler.WindowMessage += (s, e) =>
-            {
-                if (e.HWnd == hWnd && e.Message == User32.WM_NCDESTROY)
-                {
-                    win32HwndWrapper.NotifyHandleDestroyed();
-                }
-            };
+            TouchHandler handler = TouchHandler.CreateTouchHandler(win32HwndWrapper);
 
             return handler;
         }
