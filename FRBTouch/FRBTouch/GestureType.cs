@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FRBTouch.MultiTouch
+namespace FRBTouch
 {
     [Flags]
     public enum GestureType
