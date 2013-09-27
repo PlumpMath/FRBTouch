@@ -62,6 +62,7 @@ namespace FRBTouchTests
             Assert.AreEqual(1, gestureSamples.Count);
 
             var tap = gestureSamples[0];
+            Assert.AreEqual(GestureType.Tap, tap.GestureType);
             Assert.AreEqual(Vector2.Zero, tap.WorldDelta);
             Assert.AreEqual(Vector2.Zero, tap.WorldDelta2);
             Assert.AreEqual(Vector2.Zero, tap.WorldPosition);
@@ -821,6 +822,86 @@ namespace FRBTouchTests
             Assert.AreEqual(new Vector2(4, 4), samples[1].WorldPosition);
         }
 
+        [TestMethod]
+        public void hold_gesture_returns_for_tap_and_hold_for_1s()
+        {
+            // Arrange
+            _container
+                .Arrange<ITouchEventProvider>(p => p.Events)
+                .Returns(new List<TouchEvent>
+                {
+                    new TouchEvent
+                    {
+                        Id = 1,
+                        TranslatedPosition = Vector2.Zero,
+                        Action = TouchEvent.TouchEventAction.Down,
+                        TimeStamp = DateTime.Now
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(100)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(200)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(400)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(600)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(800)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(1000)
+                    },
+                    new TouchEvent
+                    {
+                        Id = 1,
+                        TranslatedPosition = Vector2.Zero,
+                        Action = TouchEvent.TouchEventAction.Up,
+                        TimeStamp = DateTime.Now.AddMilliseconds(1500.0)
+                    }
+                });
 
+            var gestureProvider = _container.Instance;
+
+            // Act
+            IEnumerable<GestureSample> samples = gestureProvider.GetSamples();
+
+            // Assert
+            var gestureSamples = samples as IList<GestureSample> ?? samples.ToList();
+            Assert.AreEqual(1, gestureSamples.Count);
+
+            var hold = gestureSamples[0];
+            Assert.AreEqual(GestureType.Hold, hold.GestureType);
+            Assert.AreEqual(Vector2.Zero, hold.WorldDelta);
+            Assert.AreEqual(Vector2.Zero, hold.WorldDelta2);
+            Assert.AreEqual(Vector2.Zero, hold.WorldPosition);
+        }
     }
 }

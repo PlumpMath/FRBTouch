@@ -76,7 +76,7 @@ namespace FRBTouch
                         if (_touchPoints.Count > 1)
                         {
                             // This was a pinch. Figure out if both points moved so we combine gestures
-                            
+
                             var pinchStart = new TouchEvent();
                             TouchEvent pinchMove = null;
                             foreach (var touchPoint in _touchPoints)
@@ -113,7 +113,7 @@ namespace FRBTouch
                                         Two = pinchMove
                                     };
 
-                            gestures.Add(new GestureSample(GestureType.Pinch, 
+                            gestures.Add(new GestureSample(GestureType.Pinch,
                                 touchEvent.TimeStamp - _startTime,
                                 touchEvent.TranslatedPosition, pinchMove.TranslatedPosition,
                                 touchEvent.TranslatedPosition - originalEvent.TranslatedPosition,
@@ -124,8 +124,10 @@ namespace FRBTouch
 
                             var originalCenter = (pinchStart.TranslatedPosition - originalEvent.TranslatedPosition)/2.0f;
                             var newCenter = (pinchMove.TranslatedPosition - touchEvent.TranslatedPosition)/2.0f;
-                            var originalCenterNontranslated = (pinchStart.TranslatedPosition - originalEvent.TranslatedPosition) / 2.0f;
-                            var newCenterNontranslated = (pinchMove.TranslatedPosition - touchEvent.TranslatedPosition) / 2.0f;
+                            var originalCenterNontranslated = (pinchStart.TranslatedPosition -
+                                                               originalEvent.TranslatedPosition)/2.0f;
+                            var newCenterNontranslated = (pinchMove.TranslatedPosition - touchEvent.TranslatedPosition)/
+                                                         2.0f;
 
                             gestures.Add(new GestureSample(GestureType.FreeDrag,
                                 touchEvent.TimeStamp - _startTime,
@@ -140,14 +142,14 @@ namespace FRBTouch
                         }
                             #endregion
 
-                        #region drag
+                            #region drag
 
                         else
                         {
                             gestures.Add(new GestureSample(GestureType.FreeDrag,
                                 touchEvent.TimeStamp - _startTime,
                                 touchEvent.TranslatedPosition,
-                                Vector2.Zero, 
+                                Vector2.Zero,
                                 touchEvent.TranslatedPosition - originalEvent.TranslatedPosition,
                                 Vector2.Zero,
                                 touchEvent.NonTranslatedPosition,
@@ -157,6 +159,10 @@ namespace FRBTouch
                         }
 
                         #endregion
+                    }
+                    else
+                    {
+                        // TODO: Put hold logic here
                     }
                 }
                 else if (touchEvent.Action == TouchEvent.TouchEventAction.Up)
