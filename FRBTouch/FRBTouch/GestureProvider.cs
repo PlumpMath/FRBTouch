@@ -14,6 +14,7 @@ namespace FRBTouch
         private readonly Dictionary<int, TouchEvent> _movingPoints;
         private readonly Dictionary<int, PinchEventGroup> _pinchPoints;
         private List<TouchEvent> _partialPinchComplete;
+        private GestureSample? _lastTap;
 
         struct PinchEventGroup
         {
@@ -163,7 +164,7 @@ namespace FRBTouch
                     _touchPoints.Remove(touchEvent.Id);
                     if (!_movingPoints.ContainsKey(touchEvent.Id))
                     {
-                        gestures.Add(new GestureSample(GestureType.Tap, 
+                        var tapGesture = new GestureSample(GestureType.Tap,
                             touchEvent.TimeStamp - _startTime,
                             touchEvent.TranslatedPosition,
                             Vector2.Zero,
@@ -172,7 +173,25 @@ namespace FRBTouch
                             touchEvent.NonTranslatedPosition,
                             Vector2.Zero,
                             Vector2.Zero,
-                            Vector2.Zero));
+                            Vector2.Zero);
+
+                        if (!_lastTap.HasValue)
+                        {
+                            _lastTap = tapGesture;
+                        }
+                        else
+                        {
+                            if (tapGesture.Timestamp - _lastTap.Value.Timestamp > TimeSpan.FromMilliseconds(500))
+                            {
+                                _lastTap = tapGesture;
+                            }
+                            else
+                            {
+                                tapGesture.GestureType = GestureType.DoubleTap;
+                            }
+                        }
+
+                        gestures.Add(tapGesture);
                     }
                     else
                     {
