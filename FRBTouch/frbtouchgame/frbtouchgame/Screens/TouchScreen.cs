@@ -8,6 +8,7 @@ using FRBTouch;
 using FRBTouch.FlatRedBall;
 using FRBTouch.MultiTouch;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace frbtouchgame.Screens
 {
@@ -35,6 +36,9 @@ namespace frbtouchgame.Screens
                 {
                     switch (gestureSample.GestureType)
                     {
+                        case GestureType.Hold:
+                            FlatRedBall.Debugging.Debugger.CommandLineWrite("Hold" + gestureSample.WorldPosition);
+                            break;
                         case GestureType.Tap:
                             var rectangle = new AxisAlignedRectangle
                             {
@@ -80,7 +84,7 @@ namespace frbtouchgame.Screens
 
         private static Vector3 GetWorldCoordinate(Vector2 touchPosition)
         {
-            return new Vector3(touchPosition, 0);            
+            return new Vector3(touchPosition, 0);
             //var touch3d = new Vector3(touchPosition, Camera.Main.Z);
             //var direction = Camera.Main.Position - touch3d;
             //direction.Normalize();

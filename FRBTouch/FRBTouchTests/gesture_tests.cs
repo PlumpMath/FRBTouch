@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FRBTouch;
 using FRBTouch.MultiTouch;
+using Microsoft.Practices.ObjectBuilder2;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Xna.Framework;
 using Telerik.JustMock.Container;
@@ -902,6 +903,262 @@ namespace FRBTouchTests
             Assert.AreEqual(Vector2.Zero, hold.WorldDelta);
             Assert.AreEqual(Vector2.Zero, hold.WorldDelta2);
             Assert.AreEqual(Vector2.Zero, hold.WorldPosition);
+        }
+
+        [TestMethod]
+        public void hold_gesture_returns_for_tap_and_hold_for_many_move_events()
+        {
+            // Arrange
+            var list = new List<TouchEvent>
+            {
+                new TouchEvent
+                {
+                    Id = 1,
+                    TranslatedPosition = Vector2.Zero,
+                    Action = TouchEvent.TouchEventAction.Down,
+                    TimeStamp = DateTime.Now
+                }
+            };
+
+            Enumerable.Range(0, 100).ForEach(i => list.Add(new TouchEvent
+            {
+                Id=1,
+                Action = TouchEvent.TouchEventAction.Move,
+                TranslatedPosition = Vector2.Zero,
+                TimeStamp = DateTime.Now.AddMilliseconds(25.0 * i)
+            }));
+
+            list.Add(new TouchEvent
+            {
+                Id = 1,
+                TranslatedPosition = Vector2.Zero,
+                Action = TouchEvent.TouchEventAction.Up,
+                TimeStamp = DateTime.Now.AddMilliseconds(1500.0)
+            });
+
+            _container
+                .Arrange<ITouchEventProvider>(p => p.Events)
+                .Returns(list);
+
+            var gestureProvider = _container.Instance;
+
+            // Act
+            IEnumerable<GestureSample> samples = gestureProvider.GetSamples();
+
+            // Assert
+            var gestureSamples = samples as IList<GestureSample> ?? samples.ToList();
+            Assert.AreEqual(1, gestureSamples.Count);
+
+            var hold = gestureSamples[0];
+            Assert.AreEqual(GestureType.Hold, hold.GestureType);
+            Assert.AreEqual(Vector2.Zero, hold.WorldDelta);
+            Assert.AreEqual(Vector2.Zero, hold.WorldDelta2);
+            Assert.AreEqual(Vector2.Zero, hold.WorldPosition);
+        }
+
+
+        [TestMethod]
+        public void hold_gesture_then_drag_clears_pinch()
+        {
+            // Arrange
+            _container
+                .Arrange<ITouchEventProvider>(p => p.Events)
+                .Returns(new List<TouchEvent>
+                {
+                    new TouchEvent
+                    {
+                        Id = 1,
+                        TranslatedPosition = Vector2.Zero,
+                        Action = TouchEvent.TouchEventAction.Down,
+                        TimeStamp = DateTime.Now
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(100)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(200)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(400)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(600)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(800)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(1000)
+                    },
+                    new TouchEvent
+                    {
+                        Id = 1,
+                        TranslatedPosition = Vector2.Zero,
+                        Action = TouchEvent.TouchEventAction.Up,
+                        TimeStamp = DateTime.Now.AddMilliseconds(1500.0)
+                    },
+                    new TouchEvent
+                    {
+                        Id=2,
+                        TranslatedPosition = Vector2.One,
+                        Action = TouchEvent.TouchEventAction.Down,
+                        TimeStamp = DateTime.Now.AddMilliseconds(2000.0)
+                    },
+                    new TouchEvent
+                    {
+                        Id=2,
+                        TranslatedPosition = new Vector2(1, 2),
+                        Action = TouchEvent.TouchEventAction.Move,
+                        TimeStamp = DateTime.Now.AddMilliseconds(2100.0)
+                    },
+                    new TouchEvent
+                    {
+                        Id=2,
+                        TranslatedPosition = new Vector2(1, 2),
+                        Action = TouchEvent.TouchEventAction.Up,
+                        TimeStamp = DateTime.Now.AddMilliseconds(2200.0)
+                    }
+                });
+
+            var gestureProvider = _container.Instance;
+
+            // Act
+            IEnumerable<GestureSample> samples = gestureProvider.GetSamples();
+
+            // Assert
+            var gestureSamples = samples as IList<GestureSample> ?? samples.ToList();
+            Assert.AreEqual(3, gestureSamples.Count);
+
+            var hold = gestureSamples[0];
+            Assert.AreEqual(GestureType.Hold, hold.GestureType);
+            Assert.AreEqual(Vector2.Zero, hold.WorldDelta);
+            Assert.AreEqual(Vector2.Zero, hold.WorldDelta2);
+            Assert.AreEqual(Vector2.Zero, hold.WorldPosition);
+
+            var drag = gestureSamples[1];
+            Assert.AreEqual(GestureType.FreeDrag, drag.GestureType);
+
+            var dragcomplete = gestureSamples[2];
+            Assert.AreEqual(GestureType.DragComplete, dragcomplete.GestureType);
+        }
+
+        [TestMethod]
+        public void hold_gesture_then_move_fires_drag_and_dragcomplete()
+        {
+            // Arrange
+            _container
+                .Arrange<ITouchEventProvider>(p => p.Events)
+                .Returns(new List<TouchEvent>
+                {
+                    new TouchEvent
+                    {
+                        Id = 1,
+                        TranslatedPosition = Vector2.Zero,
+                        Action = TouchEvent.TouchEventAction.Down,
+                        TimeStamp = DateTime.Now
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(100)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(200)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(400)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(600)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(800)
+                    },
+                    new TouchEvent
+                    {
+                      Id = 1,
+                      TranslatedPosition = Vector2.Zero,
+                      Action = TouchEvent.TouchEventAction.Move,
+                      TimeStamp = DateTime.Now.AddMilliseconds(1000)
+                    },
+                    new TouchEvent
+                    {
+                        Id=1,
+                        TranslatedPosition = new Vector2(1, 2),
+                        Action = TouchEvent.TouchEventAction.Move,
+                        TimeStamp = DateTime.Now.AddMilliseconds(2100.0)
+                    },
+                    new TouchEvent
+                    {
+                        Id=1,
+                        TranslatedPosition = new Vector2(1, 2),
+                        Action = TouchEvent.TouchEventAction.Up,
+                        TimeStamp = DateTime.Now.AddMilliseconds(2200.0)
+                    }
+                });
+
+            var gestureProvider = _container.Instance;
+
+            // Act
+            IEnumerable<GestureSample> samples = gestureProvider.GetSamples();
+
+            // Assert
+            var gestureSamples = samples as IList<GestureSample> ?? samples.ToList();
+            Assert.AreEqual(3, gestureSamples.Count);
+
+            var hold = gestureSamples[0];
+            Assert.AreEqual(GestureType.Hold, hold.GestureType);
+            Assert.AreEqual(Vector2.Zero, hold.WorldDelta);
+            Assert.AreEqual(Vector2.Zero, hold.WorldDelta2);
+            Assert.AreEqual(Vector2.Zero, hold.WorldPosition);
+
+            var drag = gestureSamples[1];
+            Assert.AreEqual(GestureType.FreeDrag, drag.GestureType);
+
+            var dragcomplete = gestureSamples[2];
+            Assert.AreEqual(GestureType.DragComplete, dragcomplete.GestureType);
         }
     }
 }

@@ -13,8 +13,9 @@ namespace FRBTouch
         private readonly Dictionary<int, TouchEvent> _touchPoints;
         private readonly Dictionary<int, TouchEvent> _movingPoints;
         private readonly Dictionary<int, PinchEventGroup> _pinchPoints;
-        private List<TouchEvent> _partialPinchComplete;
+        private readonly List<TouchEvent> _partialPinchComplete;
         private GestureSample? _lastTap;
+        private TouchEvent _holdEvent;
 
         struct PinchEventGroup
         {
@@ -69,6 +70,7 @@ namespace FRBTouch
 
                     if (originalEvent.TranslatedPosition != touchEvent.TranslatedPosition)
                     {
+                        _holdEvent = null;
                         _movingPoints[touchEvent.Id] = touchEvent;
 
                         #region pinch
@@ -160,14 +162,25 @@ namespace FRBTouch
 
                         #endregion
                     }
-                    else
+                    else if (_holdEvent == null &&
+                             touchEvent.TimeStamp - originalEvent.TimeStamp >= TimeSpan.FromSeconds(1))
                     {
-                        // TODO: Put hold logic here
+                        gestures.Add(new GestureSample(GestureType.Hold, touchEvent.TimeStamp - _startTime,
+                            touchEvent.TranslatedPosition, Vector2.Zero, Vector2.Zero, Vector2.Zero,
+                            touchEvent.NonTranslatedPosition, Vector2.Zero, Vector2.Zero, Vector2.Zero));
+                        _holdEvent = touchEvent;
                     }
                 }
                 else if (touchEvent.Action == TouchEvent.TouchEventAction.Up)
                 {
                     _touchPoints.Remove(touchEvent.Id);
+
+                    if (_holdEvent != null)
+                    {
+                        _holdEvent = null;
+                        continue;
+                    }
+
                     if (!_movingPoints.ContainsKey(touchEvent.Id))
                     {
                         var tapGesture = new GestureSample(GestureType.Tap,
@@ -212,14 +225,16 @@ namespace FRBTouch
 
                             if (!_partialPinchComplete.Contains(touchEvent, TouchEvent.IdComparer))
                             {
-                                var otherPoint = pinchPoint.One.Id == touchEvent.Id ? pinchPoint.Two : pinchPoint.One;
+                                var otherPoint = pinchPoint.One.Id == touchEvent.Id
+                                    ? pinchPoint.Two
+                                    : pinchPoint.One;
                                 _partialPinchComplete.Add(otherPoint);
 
                                 gestures.Add(new GestureSample(GestureType.PinchComplete,
                                     touchEvent.TimeStamp - _startTime,
                                     pinchPoint.One.TranslatedPosition,
                                     pinchPoint.Two.TranslatedPosition,
-                                    Vector2.Zero, 
+                                    Vector2.Zero,
                                     Vector2.Zero,
                                     pinchPoint.One.NonTranslatedPosition,
                                     pinchPoint.Two.NonTranslatedPosition,
@@ -242,7 +257,6 @@ namespace FRBTouch
                         }
                     }
                 }
-
             }
 
             return gestures;
